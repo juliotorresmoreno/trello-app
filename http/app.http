@@ -31,3 +31,7 @@ Content-Type: application/json
 }
 
 
+###
+PATCH {{server}}/api/v1/trello/prepare
+
+
