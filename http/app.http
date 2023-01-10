@@ -1,0 +1,33 @@
+@server=http://localhost:3000
+
+###
+POST {{server}}/api/v1/trello
+Content-Type: application/json
+
+{
+    "type": "issue",
+    "title": "nada",
+    "description": "asdas"
+}
+
+###
+POST {{server}}/api/v1/trello
+Content-Type: application/json
+
+{
+    "type": "bug",
+    "title": "nada",
+    "description": "asdas"
+}
+
+###
+POST {{server}}/api/v1/trello
+Content-Type: application/json
+
+{
+    "type": "task",
+    "title": "NAdando",
+    "category": "Maintenance"
+}
+
+

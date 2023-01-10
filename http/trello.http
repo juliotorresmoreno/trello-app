@@ -1,0 +1,44 @@
+
+@Key=2f70eaf4041a88c540e75dbc0069cb04
+@Token=ATTAf16bb0b7e522d3de9deb59a8e6759f82a51f59a32723c99a296868b0b9bfe051F6C4EF21
+
+@server=https://api.trello.com
+
+@idBoard=63bdc4fbd8316302cb9bd29c
+@idList=63bdcbb7992a320214ada5c4
+
+###
+GET {{server}}/1/members/me/boards?key={{Key}}&token={{Token}}
+
+
+###
+POST {{server}}/1/cards?key={{Key}}&token={{Token}}
+Content-Type: application/json
+
+{
+    "name": "test"
+}
+
+###
+GET {{server}}/1/boards/KydXU1O5?key={{Key}}&token={{Token}}
+
+###
+GET https://api.trello.com/1/lists/63bdcfd520ff6a03730f5ab0?idBoard=63bdc4fbd8316302cb9bd29c&name=NaN&key={{Key}}&token={{Token}}
+
+###
+POST https://api.trello.com/1/lists?idBoard=63bdc4fbd8316302cb9bd29c&name=NaN&key={{Key}}&token={{Token}}
+
+###
+GET https://api.trello.com/1/boards/KydXU1O5/lists?key={{Key}}&token={{Token}}
+
+###
+GET https://api.trello.com/1/boards/KydXU1O5/labels?key={{Key}}&token={{Token}}
+
+###
+POST https://api.trello.com/1/cards?idList={{idList}}&key={{Key}}&token={{Token}}
+Content-Type: application/json
+
+{
+    "name": "Probando esto",
+    "desc": "Nadando"
+}
