@@ -32,14 +32,6 @@ func NewServer() *echo.Echo {
 	return e
 }
 
-// HealthCheck godoc
-// @Summary Show the status of server.
-// @Description get the status of server.
-// @Tags root
-// @Accept application/json
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router / [get]
 func HealthCheck(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Server is running",

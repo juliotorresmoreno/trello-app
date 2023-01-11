@@ -3,13 +3,21 @@ package configs
 import (
 	"fmt"
 	"os"
+	"path"
+	"path/filepath"
+	"runtime"
 	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
+var (
+	_, b, _, _ = runtime.Caller(0)
+	basepath   = path.Join(filepath.Dir(b), "..", ".env")
+)
+
 func init() {
-	err := godotenv.Load()
+	err := godotenv.Load(basepath)
 	if err != nil {
 		fmt.Println(err)
 	}
