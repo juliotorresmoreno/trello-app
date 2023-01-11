@@ -10,6 +10,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// An instance of echo server is created that allows adding additional
+// configurations and making it listen for requests
 func NewServer() *echo.Echo {
 	e := echo.New()
 

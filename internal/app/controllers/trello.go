@@ -9,6 +9,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+/**
+ * trelloApi: The objective of this structure is to group all the possible data necessary to
+ * make it work, for example, if fixed parameters were required or data that does not change
+ * in each call of its functions.
+ */
 type trelloApi struct {
 }
 
@@ -29,7 +34,7 @@ type createSchema struct {
 
 var trelloService = trello_service.NewTrelloService()
 
-// getLabels: i could not find how can i create new cards with types.
+// i could not find how can i create new cards with types.
 func getLabels(labels trello_service.Labels, Type string, Category string) []string {
 	list := make([]string, 0)
 	if label, ok := labels[Type]; ok {
@@ -76,6 +81,7 @@ func createValidation(payload *createSchema) error {
 	return nil
 }
 
+// This is the place where the magic happens. It is the controller that registers card creation requests in Trello
 func (t trelloApi) create(c echo.Context) error {
 	var err error
 	payload := new(createSchema)
