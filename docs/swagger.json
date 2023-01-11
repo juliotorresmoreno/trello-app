@@ -10,22 +10,87 @@
         "produces": [
           "text/plain"
         ],
-        "parameters": [
-          {
-            "name": "name",
-            "required": false,
-            "type": "string",
-            "in": "query",
-            "description": "defaults to World if not given"
-          }
-        ],
-        "operationId": "getGreeting",
+        "operationId": "Hello",
         "responses": {
           "200": {
             "description": "returns a greeting",
             "schema": {
               "type": "string",
-              "description": "contains the actual greeting as plain text"
+              "description": "A standard response for state validation"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trello": {
+      "post": {
+        "tags": [
+          "trello"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Card",
+            "description": "The card to create.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "type",
+                "title"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "issue",
+                    "bug",
+                    "task"
+                  ],
+                  "example": "issue"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "New Task"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "My new task description"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "maintenance"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "Create card",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "description": "Nothing at all, just an empty object is returned in case any client tries to decode the response"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "description": "contains the actual greeting as plain text",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
