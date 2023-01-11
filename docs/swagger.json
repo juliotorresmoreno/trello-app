@@ -81,11 +81,23 @@
               "description": "Nothing at all, just an empty object is returned in case any client tries to decode the response"
             }
           },
+          "403": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "description": "the user has made a mistake in the information sent to the server",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "schema": {
               "type": "object",
-              "description": "contains the actual greeting as plain text",
+              "description": "The request could not be processed because something on the server or the trello integration is not working",
               "properties": {
                 "message": {
                   "type": "string"
