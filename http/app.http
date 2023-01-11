@@ -30,6 +30,16 @@ Content-Type: application/json
     "category": "Maintenance"
 }
 
+###
+POST {{server}}/api/v1/trello
+Content-Type: application/json
+
+{
+    "type": "task",
+    "title": "NAda",
+    "category": "Maintenance"
+}
+
 
 ###
 PATCH {{server}}/api/v1/trello/prepare

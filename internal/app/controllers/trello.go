@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -43,19 +44,50 @@ func getLabels(labels trello_service.Labels, Type string, Category string) []str
 	return list
 }
 
-// HealthCheck godoc
-// @Summary Show the status of server.
-// @Description get the status of server.
-// @Tags trello
-// @Accept application/json
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /api/v1/trello [post]
+type strSlice []string
+
+func (slice strSlice) SliceIndex(value string) int {
+	for p, v := range slice {
+		if v == value {
+			return p
+		}
+	}
+	return -1
+}
+
+func createValidation(payload *createSchema) error {
+	if payload.Title == "" {
+		return errors.New("title is required")
+	}
+	if payload.Type == "" {
+		return errors.New("type is required")
+	}
+	types := strSlice{"task", "bug", "issue"}
+	if types.SliceIndex(payload.Type) < 0 {
+		return errors.New("title only can be: task, bug or issue")
+	}
+	if payload.Type == "task" {
+		types := strSlice{"Maintenance"}
+
+		if types.SliceIndex(payload.Category) < 0 {
+			return errors.New("category only can be: Maintenance")
+		}
+	}
+	return nil
+}
+
 func (t trelloApi) create(c echo.Context) error {
 	var err error
 	payload := new(createSchema)
 	c.Bind(payload)
 	response := map[string]interface{}{}
+
+	err = createValidation(payload)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
 
 	Alllabels, err := trelloService.GetLabels()
 	if err != nil {
