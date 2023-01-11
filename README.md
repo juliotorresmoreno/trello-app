@@ -3,7 +3,7 @@
 ## Compile docs
 
 ```bash
-swagger-cli bundle -o docs/swagger.json docs/swagger.yml
+npx swagger-cli bundle -o docs/swagger.json docs/swagger.yml
 ```
 
 ## How run swagger docs
