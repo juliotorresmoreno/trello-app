@@ -16,14 +16,15 @@ func init() {
 }
 
 type TrelloConf struct {
-	Key     string
-	Token   string
-	Server  string
-	BoardId string
+	Key     string `json:"key"`
+	Token   string `json:"token"`
+	Server  string `json:"server"`
+	BoardId string `json:"board_id"`
 }
 
 type Config struct {
 	Port   int
+	Env    string
 	Trello TrelloConf
 }
 
@@ -33,9 +34,9 @@ var config Config = Config{}
 func GetConfig() Config {
 	var err error
 	if !reload {
-		reload = false
 		return config
 	}
+	reload = false
 
 	config.Port, err = strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {

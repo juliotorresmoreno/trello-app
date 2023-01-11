@@ -1,4 +1,4 @@
-package services
+package trello_service
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 )
 
 type TrelloService struct {
+	boardId string
 }
 
 // NewTrelloService
@@ -35,11 +36,47 @@ type List struct {
 	SoftLimit  interface{} `json:"soft_limit"`
 }
 
-func (e TrelloService) GetLists() ([]List, error) {
+type Board struct {
+	Id string `json:"id"`
+}
+
+func (t TrelloService) getBoardId() (string, error) {
+	if t.boardId != "" {
+		return t.boardId, nil
+	}
+
+	config := configs.GetConfig().Trello
+
+	url := fmt.Sprintf("%v/1/boards/%v?key=%v&token=%v", config.Server, config.BoardId, config.Key, config.Token)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return "", errors.New("ups, something has not working, please wait a moment and re-try")
+	}
+
+	board := Board{}
+	err = json.NewDecoder(resp.Body).Decode(&board)
+
+	return board.Id, err
+}
+
+func (t TrelloService) GetLists() ([]List, error) {
 	lists := make([]List, 0)
 	config := configs.GetConfig().Trello
 
-	url := fmt.Sprintf("%v/1/boards/%v/lists?key=%v&token=%v", config.Server, config.BoardId, config.Key, config.Token)
+	boardId, err := t.getBoardId()
+	if err != nil {
+		return lists, err
+	}
+	url := fmt.Sprintf("%v/1/boards/%v/lists?key=%v&token=%v", config.Server, boardId, config.Key, config.Token)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return lists, err
@@ -48,6 +85,10 @@ func (e TrelloService) GetLists() ([]List, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return lists, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return lists, errors.New("ups, something has not working, please wait a moment and re-try")
 	}
 
 	json.NewDecoder(resp.Body).Decode(&lists)
@@ -64,12 +105,16 @@ type Label struct {
 
 type Labels map[string]Label
 
-func (e TrelloService) GetLabels() (Labels, error) {
+func (t TrelloService) GetLabels() (Labels, error) {
 	lists := make([]Label, 0)
 	labels := Labels{}
 	config := configs.GetConfig().Trello
 
-	url := fmt.Sprintf("%v/1/boards/%v/labels?key=%v&token=%v", config.Server, config.BoardId, config.Key, config.Token)
+	boardId, err := t.getBoardId()
+	if err != nil {
+		return labels, err
+	}
+	url := fmt.Sprintf("%v/1/boards/%v/labels?key=%v&token=%v", config.Server, boardId, config.Key, config.Token)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return labels, err
@@ -78,6 +123,10 @@ func (e TrelloService) GetLabels() (Labels, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return labels, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return labels, errors.New("ups, something has not working, please wait a moment and re-try")
 	}
 
 	json.NewDecoder(resp.Body).Decode(&lists)
@@ -136,7 +185,7 @@ type CreateCardLabel struct {
 	Color string
 }
 
-func (e TrelloService) CreateLabel(payload CreateCardLabel) error {
+func (t TrelloService) CreateLabel(payload CreateCardLabel) error {
 	config := configs.GetConfig().Trello
 
 	b, err := json.Marshal(payload)
@@ -146,9 +195,13 @@ func (e TrelloService) CreateLabel(payload CreateCardLabel) error {
 	body := bytes.NewBuffer(b)
 	// 'https://api.trello.com/1/labels?name={name}&color={color}&idBoard={idBoard}&key=APIKey&token=APIToken'
 
+	boardId, err := t.getBoardId()
+	if err != nil {
+		return err
+	}
 	url := fmt.Sprintf(
 		"%v/1/labels?name=%v&color=%v&idBoard=%v&key=%v&token=%v",
-		config.Server, payload.Name, payload.Color, config.BoardId, config.Key, config.Token)
+		config.Server, payload.Name, payload.Color, boardId, config.Key, config.Token)
 
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {

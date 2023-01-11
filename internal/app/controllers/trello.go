@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	services "github.com/juliotorresmoreno/trello-app/internal/app/services/trello-service"
 	trello_service "github.com/juliotorresmoreno/trello-app/internal/app/services/trello-service"
 	"github.com/labstack/echo/v4"
 )
@@ -43,6 +42,15 @@ func getLabels(labels trello_service.Labels, Type string, Category string) []str
 	}
 	return list
 }
+
+// HealthCheck godoc
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags trello
+// @Accept application/json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /api/v1/trello [post]
 func (t trelloApi) create(c echo.Context) error {
 	var err error
 	payload := new(createSchema)
@@ -57,7 +65,7 @@ func (t trelloApi) create(c echo.Context) error {
 	}
 	labels := getLabels(Alllabels, payload.Type, payload.Category)
 
-	data := services.CreateCardScheme{
+	data := trello_service.CreateCardScheme{
 		Name:     payload.Title,
 		Desc:     payload.Description,
 		IdLabels: labels,
