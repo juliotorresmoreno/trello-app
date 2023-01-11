@@ -13,15 +13,18 @@ import (
 	"github.com/juliotorresmoreno/trello-app/internal/app"
 )
 
+var baseUrl = "http://localhost:%v"
+var trelloEndpoint = "%v/api/v1/trello"
+
 func doRequest(url string, body map[string]interface{}) error {
 	b, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
 
-	_body := bytes.NewBuffer(b)
+	buff := bytes.NewBuffer(b)
 
-	req, err := http.NewRequest("POST", url, _body)
+	req, err := http.NewRequest("POST", url, buff)
 	if err != nil {
 		return err
 	}
@@ -43,9 +46,9 @@ func doRequestError(url string, body map[string]interface{}) error {
 		return err
 	}
 
-	_body := bytes.NewBuffer(b)
+	buff := bytes.NewBuffer(b)
 
-	req, err := http.NewRequest("POST", url, _body)
+	req, err := http.NewRequest("POST", url, buff)
 	if err != nil {
 		return err
 	}
@@ -74,8 +77,8 @@ func TestTrelloIssue(t *testing.T) {
 	conf := configs.GetConfig()
 	time.Sleep(1 * time.Second)
 
-	addr := fmt.Sprintf("http://localhost:%v", conf.Port)
-	url := fmt.Sprintf("%v/api/v1/trello", addr)
+	addr := fmt.Sprintf(baseUrl, conf.Port)
+	url := fmt.Sprintf(trelloEndpoint, addr)
 
 	body := map[string]interface{}{
 		"type":        "issue",
@@ -94,8 +97,8 @@ func TestTrelloIssueE1(t *testing.T) {
 	conf := configs.GetConfig()
 	time.Sleep(1 * time.Second)
 
-	addr := fmt.Sprintf("http://localhost:%v", conf.Port)
-	url := fmt.Sprintf("%v/api/v1/trello", addr)
+	addr := fmt.Sprintf(baseUrl, conf.Port)
+	url := fmt.Sprintf(trelloEndpoint, addr)
 
 	body := map[string]interface{}{
 		"type":        "issues",
@@ -115,8 +118,8 @@ func TestTrelloBug(t *testing.T) {
 	conf := configs.GetConfig()
 	time.Sleep(1 * time.Second)
 
-	addr := fmt.Sprintf("http://localhost:%v", conf.Port)
-	url := fmt.Sprintf("%v/api/v1/trello", addr)
+	addr := fmt.Sprintf(baseUrl, conf.Port)
+	url := fmt.Sprintf(trelloEndpoint, addr)
 
 	body := map[string]interface{}{
 		"type":        "bug",
@@ -136,8 +139,8 @@ func TestTrelloBugE1(t *testing.T) {
 	conf := configs.GetConfig()
 	time.Sleep(1 * time.Second)
 
-	addr := fmt.Sprintf("http://localhost:%v", conf.Port)
-	url := fmt.Sprintf("%v/api/v1/trello", addr)
+	addr := fmt.Sprintf(baseUrl, conf.Port)
+	url := fmt.Sprintf(trelloEndpoint, addr)
 
 	body := map[string]interface{}{
 		"type":        "bug",
@@ -158,8 +161,8 @@ func TestTrelloTask(t *testing.T) {
 	conf := configs.GetConfig()
 	time.Sleep(1 * time.Second)
 
-	addr := fmt.Sprintf("http://localhost:%v", conf.Port)
-	url := fmt.Sprintf("%v/api/v1/trello", addr)
+	addr := fmt.Sprintf(baseUrl, conf.Port)
+	url := fmt.Sprintf(trelloEndpoint, addr)
 
 	body := map[string]interface{}{
 		"type":     "task",
@@ -179,8 +182,8 @@ func TestTrelloTaskE1(t *testing.T) {
 	conf := configs.GetConfig()
 	time.Sleep(1 * time.Second)
 
-	addr := fmt.Sprintf("http://localhost:%v", conf.Port)
-	url := fmt.Sprintf("%v/api/v1/trello", addr)
+	addr := fmt.Sprintf(baseUrl, conf.Port)
+	url := fmt.Sprintf(trelloEndpoint, addr)
 
 	body := map[string]interface{}{
 		"type":     "task",

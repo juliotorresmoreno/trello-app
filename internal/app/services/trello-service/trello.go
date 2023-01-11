@@ -10,6 +10,8 @@ import (
 	"github.com/juliotorresmoreno/trello-app/configs"
 )
 
+var defaultErrorStatusCode = errors.New("ups, something has not working, please wait a moment and re-try")
+
 type TrelloService struct {
 	boardId string
 }
@@ -59,7 +61,7 @@ func (t TrelloService) getBoardId() (string, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", errors.New("ups, something has not working, please wait a moment and re-try")
+		return "", defaultErrorStatusCode
 	}
 
 	board := Board{}
@@ -88,7 +90,7 @@ func (t TrelloService) GetLists() ([]List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return lists, errors.New("ups, something has not working, please wait a moment and re-try")
+		return lists, defaultErrorStatusCode
 	}
 
 	json.NewDecoder(resp.Body).Decode(&lists)
@@ -126,7 +128,7 @@ func (t TrelloService) GetLabels() (Labels, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return labels, errors.New("ups, something has not working, please wait a moment and re-try")
+		return labels, defaultErrorStatusCode
 	}
 
 	json.NewDecoder(resp.Body).Decode(&lists)
@@ -170,7 +172,7 @@ func (e TrelloService) CreateCard(payload CreateCardScheme) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("ups, something has not working, please wait a moment and re-try")
+		return defaultErrorStatusCode
 	}
 
 	return nil
@@ -215,7 +217,7 @@ func (t TrelloService) CreateLabel(payload CreateCardLabel) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("ups, something has not working, please wait a moment and re-try")
+		return defaultErrorStatusCode
 	}
 
 	return nil
