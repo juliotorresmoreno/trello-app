@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/juliotorresmoreno/trello-app/configs"
 	trello_service "github.com/juliotorresmoreno/trello-app/internal/app/services/trello-service"
 	"github.com/labstack/echo/v4"
 )
@@ -14,13 +15,14 @@ import (
  * make it work, for example, if fixed parameters were required or data that does not change
  * in each call of its functions.
  */
-type trelloApi struct {
+type TrelloApi struct {
 }
 
 func AttachTrelloApi(g *echo.Group) *echo.Group {
-	c := &trelloApi{}
+	c := &TrelloApi{}
 
-	g.POST("", c.create)
+	g.POST("", c.Create)
+	g.DELETE("/{id}", c.Delete)
 
 	return g
 }
@@ -32,7 +34,8 @@ type createSchema struct {
 	Category    string `json:"category"`
 }
 
-var trelloService = trello_service.NewTrelloService()
+var trelloConf = configs.GetConfig().Trello
+var trelloService = trello_service.NewTrelloService(trelloConf.BoardId)
 
 // i could not find how can i create new cards with types.
 func getLabels(labels trello_service.Labels, Type string, Category string) []string {
@@ -82,7 +85,7 @@ func createValidation(payload *createSchema) error {
 }
 
 // This is the place where the magic happens. It is the controller that registers card creation requests in Trello
-func (t trelloApi) create(c echo.Context) error {
+func (t TrelloApi) Create(c echo.Context) error {
 	var err error
 	payload := new(createSchema)
 	c.Bind(payload)
@@ -97,9 +100,7 @@ func (t trelloApi) create(c echo.Context) error {
 
 	Alllabels, err := trelloService.GetLabels()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "Internal Server Error",
-		})
+		return c.JSON(http.StatusInternalServerError, InternalServerErrorResponse)
 	}
 	labels := getLabels(Alllabels, payload.Type, payload.Category)
 
@@ -108,13 +109,38 @@ func (t trelloApi) create(c echo.Context) error {
 		Desc:     payload.Description,
 		IdLabels: labels,
 	}
-	err = trelloService.CreateCard(data)
+	card, err := trelloService.CreateCard(data)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "Internal Server Error",
-		})
+		return c.JSON(http.StatusInternalServerError, InternalServerErrorResponse)
 	}
+	response["id"] = card.ID
 
 	// It's ideal that you do not send answer because you are send status code 201.
 	return c.JSON(http.StatusCreated, response)
+}
+
+// This is the place where the magic happens. It is the controller that registers card creation requests in Trello
+func (t TrelloApi) Delete(c echo.Context) error {
+	var err error
+	id := c.Param("id")
+	response := map[string]interface{}{}
+
+	err = trelloService.DeleteCard(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, InternalServerErrorResponse)
+	}
+
+	return c.JSON(http.StatusNoContent, response)
+}
+
+// This is the place where the magic happens. It is the controller that registers card creation requests in Trello
+func (t TrelloApi) Get(c echo.Context) error {
+	var err error
+
+	cards, err := trelloService.GetCards()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, InternalServerErrorResponse)
+	}
+
+	return c.JSON(http.StatusOK, cards)
 }

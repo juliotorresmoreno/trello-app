@@ -4,197 +4,144 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
-	"github.com/juliotorresmoreno/trello-app/configs"
-	"github.com/juliotorresmoreno/trello-app/internal/app"
+	"github.com/juliotorresmoreno/trello-app/internal/app/controllers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
 )
 
-var baseUrl = "http://localhost:%v"
-var trelloEndpoint = "%v/api/v1/trello"
+var testTitle = "test_card"
+var testDescription = "test description"
+var ErrorStatusCode = errors.New("ups, something has not working, please wait a moment and re-try")
 
-func doRequest(url string, body map[string]interface{}) error {
-	b, err := json.Marshal(body)
-	if err != nil {
-		return err
+func createRequest(method, url string, body interface{}) (*httptest.ResponseRecorder, echo.Context) {
+	e := echo.New()
+	var buff io.Reader = nil
+	if body != nil {
+		b, _ := json.Marshal(body)
+		buff = bytes.NewBuffer(b)
 	}
+	req := httptest.NewRequest(method, url, buff)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
-	buff := bytes.NewBuffer(b)
-
-	req, err := http.NewRequest("POST", url, buff)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("content-type", "application/json")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode != http.StatusCreated {
-		return errors.New("ups, something has not working, please wait a moment and re-try")
-	}
-	return nil
+	return rec, c
 }
 
-func doRequestError(url string, body map[string]interface{}) error {
-	b, err := json.Marshal(body)
-	if err != nil {
-		return err
-	}
+func removeCard(api *controllers.TrelloApi, id string) (*httptest.ResponseRecorder, error) {
+	rec, c := createRequest(http.MethodDelete, "/"+id, nil)
+	c.SetParamNames("id")
+	c.SetParamValues(id)
 
-	buff := bytes.NewBuffer(b)
-
-	req, err := http.NewRequest("POST", url, buff)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("content-type", "application/json")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode == http.StatusCreated {
-		return errors.New("ups, something has not working, please wait a moment and re-try")
-	}
-	return nil
+	return rec, api.Delete(c)
 }
 
 func TestTrelloIssue(t *testing.T) {
-	e := app.NewServer()
-
-	go func() {
-		conf := configs.GetConfig()
-
-		addr := fmt.Sprintf(":%v", conf.Port)
-		e.Logger.Fatal(e.Start(addr))
-	}()
-
-	conf := configs.GetConfig()
-	time.Sleep(1 * time.Second)
-
-	addr := fmt.Sprintf(baseUrl, conf.Port)
-	url := fmt.Sprintf(trelloEndpoint, addr)
+	require := require.New(t)
 
 	body := map[string]interface{}{
 		"type":        "issue",
-		"title":       "probando",
-		"description": "probando descripcion",
+		"title":       testTitle,
+		"description": testDescription,
 	}
 
-	err := doRequest(url, body)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	rec, c := createRequest(http.MethodPost, "/", body)
+
+	api := &controllers.TrelloApi{}
+
+	err := api.Create(c)
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusCreated)
+	response := map[string]string{}
+	err = json.NewDecoder(rec.Body).Decode(&response)
+	require.NoError(err)
+
+	rec, err = removeCard(api, response["id"])
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusNoContent)
 }
 
 func TestTrelloIssueE1(t *testing.T) {
-	conf := configs.GetConfig()
-	time.Sleep(1 * time.Second)
-
-	addr := fmt.Sprintf(baseUrl, conf.Port)
-	url := fmt.Sprintf(trelloEndpoint, addr)
-
+	require := require.New(t)
 	body := map[string]interface{}{
 		"type":        "issues",
-		"title":       "probando",
-		"description": "probando descripcion",
+		"title":       testTitle,
+		"description": testDescription,
 	}
 
-	err := doRequestError(url, body)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	rec, c := createRequest(http.MethodPost, "/", body)
+	api := &controllers.TrelloApi{}
+
+	err := api.Create(c)
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusBadRequest)
 }
 
 func TestTrelloBug(t *testing.T) {
-
-	conf := configs.GetConfig()
-	time.Sleep(1 * time.Second)
-
-	addr := fmt.Sprintf(baseUrl, conf.Port)
-	url := fmt.Sprintf(trelloEndpoint, addr)
+	require := require.New(t)
 
 	body := map[string]interface{}{
 		"type":        "bug",
-		"title":       "nada",
-		"description": "asdas",
+		"title":       testTitle,
+		"description": testDescription,
 	}
 
-	err := doRequest(url, body)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-}
+	rec, c := createRequest(http.MethodPost, "/", body)
+	api := &controllers.TrelloApi{}
 
-func TestTrelloBugE1(t *testing.T) {
+	err := api.Create(c)
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusCreated)
+	response := map[string]string{}
+	err = json.NewDecoder(rec.Body).Decode(&response)
+	require.NoError(err)
 
-	conf := configs.GetConfig()
-	time.Sleep(1 * time.Second)
-
-	addr := fmt.Sprintf(baseUrl, conf.Port)
-	url := fmt.Sprintf(trelloEndpoint, addr)
-
-	body := map[string]interface{}{
-		"type":        "bug",
-		"title":       "",
-		"description": "asdas",
-	}
-
-	err := doRequestError(url, body)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
+	rec, err = removeCard(api, response["id"])
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusNoContent)
 }
 
 func TestTrelloTask(t *testing.T) {
-
-	conf := configs.GetConfig()
-	time.Sleep(1 * time.Second)
-
-	addr := fmt.Sprintf(baseUrl, conf.Port)
-	url := fmt.Sprintf(trelloEndpoint, addr)
+	require := require.New(t)
 
 	body := map[string]interface{}{
 		"type":     "task",
-		"title":    "NAdando",
+		"title":    testTitle,
 		"category": "Maintenance",
 	}
 
-	err := doRequest(url, body)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	rec, c := createRequest(http.MethodPost, "/", body)
+	api := &controllers.TrelloApi{}
 
+	err := api.Create(c)
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusCreated)
+	response := map[string]string{}
+	err = json.NewDecoder(rec.Body).Decode(&response)
+	require.NoError(err)
+
+	rec, err = removeCard(api, response["id"])
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusNoContent)
 }
 func TestTrelloTaskE1(t *testing.T) {
-
-	conf := configs.GetConfig()
-	time.Sleep(1 * time.Second)
-
-	addr := fmt.Sprintf(baseUrl, conf.Port)
-	url := fmt.Sprintf(trelloEndpoint, addr)
+	require := require.New(t)
 
 	body := map[string]interface{}{
 		"type":     "task",
-		"title":    "NAdando",
+		"title":    testTitle,
 		"category": "maintenance",
 	}
 
-	err := doRequestError(url, body)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	rec, c := createRequest(http.MethodPost, "/", body)
+	api := controllers.TrelloApi{}
 
+	err := api.Create(c)
+	require.NoError(err)
+	require.Equal(rec.Code, http.StatusBadRequest)
 }
