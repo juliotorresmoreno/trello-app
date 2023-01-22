@@ -28,8 +28,10 @@ func NewServer() *echo.Echo {
 
 	api := e.Group("/api/v1")
 	trello := api.Group("/trello")
+	docs := api.Group("/docs")
 
 	controllers.AttachTrelloApi(trello)
+	controllers.AttachSwaggerApi(docs)
 
 	return e
 }
