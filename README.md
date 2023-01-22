@@ -27,7 +27,6 @@ Trello offers a wide range of integrations with various tools to allow teams to 
 you should clone the repository, below is an example of how to do it
 
 ```bash
-npm install
 git clone https://github.com/juliotorresmoreno/trello-app.git
 ```
 
