@@ -20,6 +20,17 @@ paths:
             properties:
               message:
                 type: string
+  /metrics:
+    get:
+      produces:
+        - text/plain
+
+      operationId: Metrics
+      responses:
+        200:
+          description: returns metrics
+          schema:
+            type: string
 
   /api/v1/trello:
     post:
