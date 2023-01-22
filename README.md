@@ -59,12 +59,6 @@ go tool cover -html=test/coverage.out -o test/coverage.html
 browse test/coverage.html # only for unix like
 ```
 
-## How run swagger docs
-Required swagger-go, please check this [link](https://goswagger.io/install.html)
-```bash
-swagger serve docs/swagger.json -p 8080
-```
-
 ## Run project on Docker
 Required docker and docker-compose, please check:
 * [Docker](https://docs.docker.com/get-docker/)
