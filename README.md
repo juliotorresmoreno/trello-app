@@ -72,3 +72,4 @@ docker-compose up -d
 
 [doc](http://localhost:3000/api/v1/docs)
 
+[metrics](http://localhost:3000/metrics)
