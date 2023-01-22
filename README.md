@@ -37,6 +37,8 @@ we create or edit the .env file and make sure it has the following content, then
 
 The TRELLO_BOARD_ID parameter is the one that appears when you click on the board you are going to use.
 
+  
+
 ```
 PORT=3000
 TRELLO_KEY=
@@ -76,3 +78,4 @@ docker-compose up -d
 [API](http://localhost:3000)
 
 [doc](http://localhost:3000/api/v1/docs)
+
