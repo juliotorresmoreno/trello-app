@@ -47,17 +47,6 @@ TRELLO_SERVER=https://api.trello.com
 TRELLO_BOARD_ID=
 ENV=development
 ```
-A dependency on javascript is required to compile the golang documentation so the following code is required if you want to see the documentation.
-
-```
-npm i
-```
-
-## Compile docs
-Required swagger-cli, please check this [link](https://www.npmjs.com/package/swagger-cli?activeTab=readme)
-```bash
-npx swagger-cli bundle -o docs/swagger.json docs/swagger.yml
-```
 
 ## Run tests
 ```bash
@@ -88,4 +77,5 @@ docker-compose up -d
 
 [API](http://localhost:3000)
 
-[doc](http://localhost:8080/docs)
+[doc](http://localhost:3000/api/v1/docs)
+

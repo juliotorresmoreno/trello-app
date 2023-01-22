@@ -65,6 +65,9 @@ paths:
           schema:
             type: object
             description: Nothing at all, just an empty object is returned in case any client tries to decode the response
+            properties:
+              id:
+                type: string
 
         403:
           description: Bad request
