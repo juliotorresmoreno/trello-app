@@ -1,6 +1,8 @@
 package preload
 
 import (
+	"log"
+
 	"github.com/juliotorresmoreno/trello-app/configs"
 	trello_service "github.com/juliotorresmoreno/trello-app/internal/app/services/trello-service"
 )
@@ -11,5 +13,8 @@ func TrelloPreload() {
 	trelloConf := configs.GetConfig().Trello
 	var trelloService = trello_service.NewTrelloService(trelloConf.BoardId)
 
-	trelloService.Prepare()
+	err := trelloService.Prepare()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

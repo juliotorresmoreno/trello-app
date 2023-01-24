@@ -6,12 +6,13 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 )
 
 var ErrorStatusCode = errors.New("ups, something has not working, please wait a moment and re-try")
 
 func DoRequestJSON(method string, url string, body interface{}) (*http.Response, error) {
-	var buff io.Reader = nil
+	var buff io.Reader
 
 	switch body := body.(type) {
 	case *bytes.Buffer:
@@ -34,4 +35,8 @@ func DoRequestJSON(method string, url string, body interface{}) (*http.Response,
 	resp, err := http.DefaultClient.Do(req)
 
 	return resp, err
+}
+
+func Concat(strs ...string) string {
+	return strings.Join(strs, "")
 }

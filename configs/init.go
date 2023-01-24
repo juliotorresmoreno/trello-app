@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -19,14 +19,15 @@ var (
 func init() {
 	err := godotenv.Load(basepath)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 }
 
 type TrelloConf struct {
 	Key     string `json:"key"`
 	Token   string `json:"token"`
-	Server  string `json:"server"`
+	Host    string `json:"host"`
+	Scheme  string `json:"scheme"`
 	BoardId string `json:"board_id"`
 }
 
@@ -52,7 +53,8 @@ func GetConfig() Config {
 	}
 	config.Trello.Key = os.Getenv("TRELLO_KEY")
 	config.Trello.Token = os.Getenv("TRELLO_TOKEN")
-	config.Trello.Server = os.Getenv("TRELLO_SERVER")
+	config.Trello.Host = os.Getenv("TRELLO_HOST")
+	config.Trello.Scheme = os.Getenv("TRELLO_SCHEME")
 	config.Trello.BoardId = os.Getenv("TRELLO_BOARD_ID")
 
 	return config
