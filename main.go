@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/juliotorresmoreno/trello-app/configs"
 	"github.com/juliotorresmoreno/trello-app/internal/app"
@@ -15,6 +15,7 @@ func main() {
 
 	preload.TrelloPreload()
 
-	addr := fmt.Sprintf(":%v", conf.Port)
+	port := strconv.Itoa(conf.Port)
+	addr := ":" + port
 	e.Logger.Fatal(e.Start(addr))
 }

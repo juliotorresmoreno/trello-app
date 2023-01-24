@@ -56,14 +56,14 @@ func TestTrelloIssue(t *testing.T) {
 
 	err := api.Create(c)
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusCreated)
+	require.Equal(http.StatusCreated, rec.Code)
 	response := map[string]string{}
 	err = json.NewDecoder(rec.Body).Decode(&response)
 	require.NoError(err)
 
 	rec, err = removeCard(api, response["id"])
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusNoContent)
+	require.Equal(http.StatusNoContent, rec.Code)
 }
 
 func TestTrelloIssueE1(t *testing.T) {
@@ -79,7 +79,7 @@ func TestTrelloIssueE1(t *testing.T) {
 
 	err := api.Create(c)
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusBadRequest)
+	require.Equal(http.StatusBadRequest, rec.Code)
 }
 
 func TestTrelloBug(t *testing.T) {
@@ -96,14 +96,14 @@ func TestTrelloBug(t *testing.T) {
 
 	err := api.Create(c)
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusCreated)
+	require.Equal(http.StatusCreated, rec.Code)
 	response := map[string]string{}
 	err = json.NewDecoder(rec.Body).Decode(&response)
 	require.NoError(err)
 
 	rec, err = removeCard(api, response["id"])
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusNoContent)
+	require.Equal(http.StatusNoContent, rec.Code)
 }
 
 func TestTrelloTask(t *testing.T) {
@@ -120,14 +120,14 @@ func TestTrelloTask(t *testing.T) {
 
 	err := api.Create(c)
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusCreated)
+	require.Equal(http.StatusCreated, rec.Code)
 	response := map[string]string{}
 	err = json.NewDecoder(rec.Body).Decode(&response)
 	require.NoError(err)
 
 	rec, err = removeCard(api, response["id"])
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusNoContent)
+	require.Equal(http.StatusNoContent, rec.Code)
 }
 func TestTrelloTaskE1(t *testing.T) {
 	require := require.New(t)
@@ -143,5 +143,5 @@ func TestTrelloTaskE1(t *testing.T) {
 
 	err := api.Create(c)
 	require.NoError(err)
-	require.Equal(rec.Code, http.StatusBadRequest)
+	require.Equal(http.StatusBadRequest, rec.Code)
 }

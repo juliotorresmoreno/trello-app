@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -33,7 +33,7 @@ func (el SwaggerApi) Get(e echo.Context) error {
 		return e.HTML(http.StatusNotFound, "Not found")
 	}
 
-	html, err := ioutil.ReadAll(f)
+	html, err := io.ReadAll(f)
 	if err != nil {
 		return e.HTML(http.StatusNotFound, "Not found")
 	}
@@ -54,7 +54,7 @@ func (el SwaggerApi) GetDocument(e echo.Context) error {
 		return e.HTML(http.StatusNotFound, NotFountError)
 	}
 
-	data, err := ioutil.ReadAll(f)
+	data, err := io.ReadAll(f)
 	if err != nil {
 		return e.HTML(http.StatusNotFound, NotFountError)
 	}

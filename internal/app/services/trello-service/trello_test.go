@@ -12,19 +12,19 @@ func TestGetBoardId(t *testing.T) {
 	trelloConf := configs.GetConfig().Trello
 
 	cli := NewTrelloService(trelloConf.BoardId)
-	boardId, err := cli.GetBoardId()
+	board, err := cli.GetBoard()
 	require.NoError(err)
 
-	require.Equal(24, len(boardId))
+	require.Equal(24, len(board.Id))
 }
 
 func TestGetBoardIdE1(t *testing.T) {
 	require := require.New(t)
 
 	cli := NewTrelloService("-")
-	boardId, err := cli.GetBoardId()
+	board, err := cli.GetBoard()
 	require.Error(err)
-	require.Empty(boardId)
+	require.Empty(board.Id)
 }
 
 func TestGetLists(t *testing.T) {
@@ -38,13 +38,13 @@ func TestGetLists(t *testing.T) {
 
 	require.NotZero(len(lists))
 
-	boardId, _ := cli.GetBoardId()
+	board, _ := cli.GetBoard()
 
 	for _, item := range lists {
 		require.NotEmpty(item.Id)
 		require.NotEmpty(item.Name)
 		require.NotEmpty(item.Pos)
-		require.Equal(item.IdBoard, boardId)
+		require.Equal(item.IdBoard, board.Id)
 	}
 }
 
@@ -196,7 +196,7 @@ func TestGetCard(t *testing.T) {
 
 	cli := NewTrelloService(trelloConf.BoardId)
 
-	boardId, _ := cli.GetBoardId()
+	board, _ := cli.GetBoard()
 	cards, err := cli.GetCards()
 	require.NoError(err)
 
@@ -206,7 +206,7 @@ func TestGetCard(t *testing.T) {
 		require.NotEmpty(card.ShortURL)
 		require.NotEmpty(card.URL)
 
-		require.Equal(card.IDBoard, boardId)
+		require.Equal(card.IDBoard, board.Id)
 	}
 }
 

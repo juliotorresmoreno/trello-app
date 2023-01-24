@@ -88,7 +88,12 @@ func createValidation(payload *createSchema) error {
 func (t TrelloApi) Create(c echo.Context) error {
 	var err error
 	payload := new(createSchema)
-	c.Bind(payload)
+	err = c.Bind(payload)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
 	response := map[string]interface{}{}
 
 	err = createValidation(payload)
